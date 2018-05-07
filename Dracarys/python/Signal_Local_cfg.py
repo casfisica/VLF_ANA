@@ -88,7 +88,7 @@ Pvtx_vtx_max  = cms.double(24.),
                               MaxMTMuonMet =  cms.double(100.0),
                               )
 process.TFileService = cms.Service("TFileService",
-fileName = cms.string("Tree.root"),
+fileName = cms.string("Signal.root"),
 closeFileFast = cms.untracked.bool(True)
 )
 
