@@ -16,7 +16,8 @@ config.Data.inputDBS = 'global'
 config.Data.splitting = 'EventAwareLumiBased'
 config.Data.unitsPerJob = 500000
 #config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
-config.Data.outLFNDirBase = '/store/user/jruizalv/VLF_ANA/OUTPUTDIR/'
+#config.Data.outLFNDirBase = '/store/user/jruizalv/VLF_ANA/OUTPUTDIR/'
+config.Data.outLFNDirBase ='/store/user/csalazar/TEST_VLF_ANA/OUTPUTDIR/'
 config.Data.publication = False
 config.Data.outputDatasetTag = 'TASK'
 
