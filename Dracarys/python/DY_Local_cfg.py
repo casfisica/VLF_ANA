@@ -1,7 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-######GETTING ALL ROOT FILES#########                                                                                                                                                          
-import commands as cmd
-##################################### 
 
 process = cms.Process("Demo")
 
@@ -31,42 +28,35 @@ process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
 
-######GETTING ALL ROOT FILES#########
-SignalContent=cmd.getoutput('ls /eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/')
-FullList=SignalContent.split('\n')
-AllFiles=[]
-for i in FullList:
-    if 'root' not in i: continue
-    else:
-        AllFiles.append('file:/eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/'+i)
-print 'Files found:', AllFiles[0]
-#####################################
-
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(AllFiles)
+                            fileNames = cms.untracked.vstring(
+                                '/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root',
+                                '/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/0EA60289-18C4-E611-8A8F-008CFA110AB4.root'
+                                
                             )
+)
 
 process.demo = cms.EDAnalyzer('Dracarys',
-bits = cms.InputTag("TriggerResults","","HLT"),
-prescales = cms.InputTag("patTrigger"),
-objects = cms.InputTag("selectedPatTrigger"),
-vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
-pileupInfo = cms.InputTag("slimmedAddPileupInfo"),
-obmuon=cms.InputTag("slimmedMuons"),
-objet=cms.InputTag("slimmedJets"),
-obmet=cms.InputTag("slimmedMETs"),
+                              bits = cms.InputTag("TriggerResults","","HLT"),
+                              prescales = cms.InputTag("patTrigger"),
+                              objects = cms.InputTag("selectedPatTrigger"),
+                              vertices = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                              pileupInfo = cms.InputTag("slimmedAddPileupInfo"),
+                              obmuon=cms.InputTag("slimmedMuons"),
+                              objet=cms.InputTag("slimmedJets"),
+                              obmet=cms.InputTag("slimmedMETs"),
                               #Is Data boolean
-is_data = cms.bool(False),
+                              is_data = cms.bool(False),
                               #Activate debug option
-debug = cms.bool(False),
+                              debug = cms.bool(False),
                               #Trigger variables
-isTrigger = cms.bool(True),
-isTriggerToo = cms.bool(False),
-TriggerPath1 = cms.string("HLT_PFMET110_PFMHT110_IDTight"),
-TriggerPath2 = cms.string("HLT_DoubleMu3_PFMET50"),
+                              isTrigger = cms.bool(True),
+                              isTriggerToo = cms.bool(False),
+                              TriggerPath1 = cms.string("HLT_PFMET110_PFMHT110_IDTight"),
+                              TriggerPath2 = cms.string("HLT_DoubleMu3_PFMET50"),
                               #Cuts
-Pvtx_ndof_min   = cms.int32(4), #Vertices DOF
-Pvtx_vtx_max  = cms.double(24.),
+                              Pvtx_ndof_min   = cms.int32(4), #Vertices DOF
+                              Pvtx_vtx_max  = cms.double(24.),
                               Pvtx_vtxdxy_max = cms.double(24.),
                               MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
                               MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
@@ -86,10 +76,10 @@ Pvtx_vtx_max  = cms.double(24.),
                               MaxNbJets = cms.int32(0), #Maximum number of jets following our defintion
                               MinMTMuonMet =  cms.double(0.0),
                               MaxMTMuonMet =  cms.double(100.0),
-                              )
+)
 process.TFileService = cms.Service("TFileService",
-fileName = cms.string("Tree.root"),
-closeFileFast = cms.untracked.bool(True)
+                                   fileName = cms.string("Tree.root"),
+                                   closeFileFast = cms.untracked.bool(True)
 )
 
 # include bad muon filter
@@ -106,9 +96,9 @@ process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidate
 process.load("VLF_ANA.Dracarys.AdditionalFilters_cfi")
 
 process.p = cms.Path(process.goodVerticesFilterPAT * 
-process.EcalDeadCellTriggerPrimitiveFilterPAT *
-process.HBHENoiseFilterPAT * 
-process.HBHENoiseIsoFilterPAT * 
-process.BadPFMuonFilter *
-process.BadChargedCandidateFilter *
-process.demo)
+                     process.EcalDeadCellTriggerPrimitiveFilterPAT *
+                     process.HBHENoiseFilterPAT * 
+                     process.HBHENoiseIsoFilterPAT * 
+                     process.BadPFMuonFilter *
+                     process.BadChargedCandidateFilter *
+                     process.demo)
