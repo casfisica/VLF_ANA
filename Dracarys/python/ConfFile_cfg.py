@@ -53,7 +53,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Activate debug option
                               debug = cms.bool(False),
                               #Trigger variables
-                              isTrigger = cms.bool(True),
+                              isTrigger = cms.bool(False),
                               isTriggerToo = cms.bool(False),
                               TriggerPath1 = cms.string("HLT_PFMET110_PFMHT110_IDTight"),
                               TriggerPath2 = cms.string("HLT_DoubleMu3_PFMET50"),
