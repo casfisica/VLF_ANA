@@ -26,7 +26,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
@@ -60,20 +60,23 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Trigger variables
                               isTrigger = cms.bool(True),
                               isTriggerToo = cms.bool(False),
-#                              TriggerPath1 = cms.string("HLT_PFMET110_PFMHT110_IDTight"),
-                              TriggerPath1 = cms.string(""),
+                              TriggerPath1 = cms.string("HLT_PFMET110_PFMHT110_IDTight"),
+#                              TriggerPath1 = cms.string("HLT_TkMu20"),
                               TriggerPath2 = cms.string("HLT_DoubleMu3_PFMET50"),
+#                              TriggerPath2 = cms.string("HLT_Mu17_TrkIsoVVL"),
                               #Cuts
                               Pvtx_ndof_min   = cms.int32(4), #Vertices DOF
                               Pvtx_vtx_max  = cms.double(24.),
                               Pvtx_vtxdxy_max = cms.double(24.),
-                              MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
-                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
+                              MinMuonPt = cms.double(3.0), #Min muon pt - for all muons - 3.0
+                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -60.0
                               MuonIso = cms.double(0.15), #Combined isolation with delta beta PU corrections
+                              MuonIsoCut = cms.bool(True), # If the cut in the Iso is taken into account
                               MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight
+                              MuonIDCut = cms.bool(True), #If the cut in the ID is taken into account
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
-                              MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
-                              MinMET = cms.double(50.0), #Min MET
+                              MaxNMuons = cms.int32(100), #Maximum number of muons following our defintiion
+                              MinMET = cms.double(50.0), #Min MET 50
                               MinJetPt = cms.double(30.0), #Min Jet Pt
                               MaxJetEta = cms.double(5.0), #Max Jet Eta
                               bJetTag = cms.double(0.8484), #b-jet ID working point
@@ -84,7 +87,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               MinNbJets = cms.int32(0), #Minimal number of jets following our definition
                               MaxNbJets = cms.int32(0), #Maximum number of jets following our defintion
                               MinMTMuonMet =  cms.double(0.0),
-                              MaxMTMuonMet =  cms.double(100.0),
+                              MaxMTMuonMet =  cms.double(100.0), #100
 )
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("DY.root"),

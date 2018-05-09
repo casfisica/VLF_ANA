@@ -84,6 +84,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   static int BasicJetsCut;
   static int bJetsCut;
   static int MuonMetMTCut;
+  
   //Is data boolean
   bool is_data_;
   //determine if event passes triggers
@@ -100,7 +101,9 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double MinMuonPt_;
   double MaxMuonPt_;
   double MuonIso_;
+  bool MuonIsoCut_;
   int MuonID_;
+  bool MuonIDCut_;
   int MinNMuons_;
   int MaxNMuons_;
   double MinMET_;
@@ -127,8 +130,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector <bool> Muon_loose, Muon_medium, Muon_tight;
   std::vector<double> bJetDiscriminator;
   double MT_LeadingMuon_MET;
-  int NMuons;
+  int NMuons, NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
   int NJets, NbJets;
-
   };
 #endif
