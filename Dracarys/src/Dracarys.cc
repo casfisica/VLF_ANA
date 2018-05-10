@@ -11,7 +11,8 @@
      [Notes on implementation]
 */
 //
-// Original Author:  Jose Ruiz
+//Original Authors:  Jose Ruiz
+//                   Camilo Salazar
 //         Created:  Tue, 08 Aug 2017 09:38:40 GMT
 //
 
