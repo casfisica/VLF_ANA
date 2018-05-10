@@ -1,7 +1,7 @@
 # VLF_ANA
 
 ## Installation instructions:
-
+```bash
 export SCRAM_ARCH=slc6_amd64_gcc530
 
 cmsrel CMSSW_8_0_25
@@ -18,6 +18,7 @@ scram b -j 10
 git clone git@github.com:HENGEX/VLF_ANA.git
 scram b -j 10
 
+```
 ## Running with crab:
 Create a new crab task and submit the jobs:  
 crab submit -c python/YOUR_CRAB_CONFIG_FILE.py  
