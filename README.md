@@ -15,7 +15,8 @@ git cms-addpkg RecoMET/METProducers
 scram b -j 10  
 git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter  
 scram b -j 10  
-
+git clone git@github.com:HENGEX/VLF_ANA.git
+scram b -j 10
 
 ## Running with crab:
 Create a new crab task and submit the jobs:  
