@@ -17,7 +17,9 @@ git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 scram b -j 10  
 #git clone git@github.com:HENGEX/VLF_ANA.git
 git clone git@github.com:casfisica/VLF_ANA.git
+cd VLF_ANA/
 git checkout TagAndSave
+cd ..
 scram b -j 10
 
 ```
