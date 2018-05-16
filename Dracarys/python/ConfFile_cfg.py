@@ -26,11 +26,12 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(30) )
 
 process.source = cms.Source("PoolSource",
+                            
                             fileNames = cms.untracked.vstring(
-        'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/14473FEF-1ACD-E611-8C84-00266CFFBC60.root'
+        'file:/eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/MINIAODSIM_1.root'
         )
                             )
 
@@ -46,41 +47,45 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Is Data boolean
                               is_data = cms.bool(False),
                               #Activate debug option
-                              debug = cms.bool(False),
+                              debug = cms.bool(True),
                               #Trigger variables
-                              isTrigger = cms.bool(True),
-                              isTriggerToo = cms.bool(False),
-                              TriggerPath1 = cms.string("HLT_PFMET110_PFMHT110_IDTight"),
-#                              TriggerPath1 = cms.string("HLT_TkMu20"),
-                              TriggerPath2 = cms.string("HLT_DoubleMu3_PFMET50"),
-#                              TriggerPath2 = cms.string("HLT_Mu17_TrkIsoVVL"),
+                              FlagTrigger_AND = cms.bool(False),
+                              FlagTrigger_OR = cms.bool(True),
+                              TriggerPath1 = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#"HLT_DoubleMu3_PFMET50"),
+                              TriggerPath2 = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"),
+                              #TriggerPath1 = cms.vstring("HLT_PFHT300","HLT_CaloJet260"),
+                              #TriggerPath2 = cms.vstring("HLT_AK4CaloJet30","HLT_MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90_IDTight","HLT_CaloJet260"),
                               #Cuts
+                              #Vertices
+                              FlagVertices = cms.bool(True), #What to evaluate vertices
                               Pvtx_ndof_min   = cms.int32(4), #Vertices DOF
                               Pvtx_vtx_max  = cms.double(24.),
                               Pvtx_vtxdxy_max = cms.double(24.),
-                              MinMuonPt = cms.double(3.0), #Min muon pt - for all muons - 3.0
-                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -60.0
-                              MuonIso = cms.double(0.15), #Combined isolation with delta beta PU corrections
-                              MuonIsoCut = cms.bool(True), # If the cut in the Iso is taken into account
-                              MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight
-                              MuonIDCut = cms.bool(True), #If the cut in the ID is taken into account
+                              #Muons
+                              FlagMuonsAna = cms.bool(True),#Want use muons (if is False will not apply any muon cut)
+                              FlagMuonsAll = cms.bool(True),#Want to save the full colection of muon (only the events that pass the general Cut)
+                              MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
+                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
+                              MuonIso = cms.double(0.15), #Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
+                              MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
-                              MaxNMuons = cms.int32(100), #Maximum number of muons following our defintiion
-                              MinMET = cms.double(50.0), #Min MET 50
+                              MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
+                              #MET
+                              MinMET = cms.double(50.0), #Min MET
                               MinJetPt = cms.double(30.0), #Min Jet Pt
                               MaxJetEta = cms.double(5.0), #Max Jet Eta
+                              #BJet
                               bJetTag = cms.double(0.8484), #b-jet ID working point
                               MinbJetPt = cms.double(30.0), #Min b Jet Pt
                               MaxbJetEta = cms.double(2.4), #Max b Jet Eta
+                              #
                               MinNJets = cms.int32(1), #Minimal number of jets following our definition
                               MaxNJets = cms.int32(6), #Maximum number of jets following our defintion
                               MinNbJets = cms.int32(0), #Minimal number of jets following our definition
                               MaxNbJets = cms.int32(0), #Maximum number of jets following our defintion
                               MinMTMuonMet =  cms.double(0.0),
-                              MaxMTMuonMet =  cms.double(100.0), #100
-)
-
-
+                              MaxMTMuonMet =  cms.double(100.0),
+                              )
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("Tree.root"),
                                    closeFileFast = cms.untracked.bool(True)

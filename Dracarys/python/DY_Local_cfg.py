@@ -26,21 +26,13 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(50000) )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(
-                                'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root'
-                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/0EA60289-18C4-E611-8A8F-008CFA110AB4.root'
-#                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/101D622A-85C4-E611-A7C2-C4346BC80410.root' 
-#                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/1057A261-06C4-E611-A94C-008CFA11113C.root'
-#                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/10F21356-7DC4-E611-B7CE-008CFA052C0C.root'
-#                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/143EF93E-00C4-E611-8E98-008CFA11131C.root'
-#                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/1466D571-87C4-E611-A9AD-00266CFFCCB4.root'
-#                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/18BBCCC4-F3C3-E611-AC2E-AC162DA8C2B0.root'
-                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/2000B2F7-88C4-E611-AA25-C4346BC87798.root'
-                                ,'/store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/20587787-18C4-E611-9A68-008CFA197BD4.root'
-                                
+                                #'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root'
+                                'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/14473FEF-1ACD-E611-8C84-00266CFFBC60.root'
+        
                             )
 )
 
@@ -69,21 +61,21 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               Pvtx_vtx_max  = cms.double(24.),
                               Pvtx_vtxdxy_max = cms.double(24.),
                               MinMuonPt = cms.double(3.0), #Min muon pt - for all muons - 3.0
-                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -60.0
+                              MaxMuonPt = cms.double(40.0), #Max muon pt - for all muons -40.0
                               MuonIso = cms.double(0.15), #Combined isolation with delta beta PU corrections
                               MuonIsoCut = cms.bool(True), # If the cut in the Iso is taken into account
                               MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight
                               MuonIDCut = cms.bool(True), #If the cut in the ID is taken into account
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
-                              MaxNMuons = cms.int32(100), #Maximum number of muons following our defintiion
-                              MinMET = cms.double(50.0), #Min MET 50
-                              MinJetPt = cms.double(30.0), #Min Jet Pt
+                              MaxNMuons = cms.int32(1), #Maximum number of muons following our defintiion
+                              MinMET = cms.double(110.0), #Min MET 50
+                              MinJetPt = cms.double(30.0), #Min Jet Pt 30
                               MaxJetEta = cms.double(5.0), #Max Jet Eta
                               bJetTag = cms.double(0.8484), #b-jet ID working point
                               MinbJetPt = cms.double(30.0), #Min b Jet Pt
                               MaxbJetEta = cms.double(2.4), #Max b Jet Eta
                               MinNJets = cms.int32(1), #Minimal number of jets following our definition
-                              MaxNJets = cms.int32(6), #Maximum number of jets following our defintion
+                              MaxNJets = cms.int32(10), #Maximum number of jets following our defintion
                               MinNbJets = cms.int32(0), #Minimal number of jets following our definition
                               MaxNbJets = cms.int32(0), #Maximum number of jets following our defintion
                               MinMTMuonMet =  cms.double(0.0),

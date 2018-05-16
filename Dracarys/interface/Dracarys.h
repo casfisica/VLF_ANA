@@ -84,26 +84,34 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   static int BasicJetsCut;
   static int bJetsCut;
   static int MuonMetMTCut;
-  
-  //Is data boolean
+ 
+ //Is data boolean
   bool is_data_;
+  
+  ////////////////TRIGGER////////////////////
   //determine if event passes triggers
-  bool isTrigger_;
-  bool isTriggerToo_;
-  string TriggerPath1_;
-  string TriggerPath2_;
+  /*Une vector to the triggers paths to be computed as AND, and the other to be computed as OR*/
+  /**/
+  bool FlagTrigger_AND_;
+  bool FlagTrigger_OR_;
+  std::vector<string> TriggerPath1_;
+  std::vector<string> TriggerPath2_;
+  //////////////////////////////////////////
   //Debugging option boolean
   bool debug_;
   //Cuts
+  //Vertices
+  bool FlagVertices_;
   int Pvtx_ndof_min_;
   double Pvtx_vtx_max_;
   double Pvtx_vtxdxy_max_;
+  //Muons
+  bool FlagMuonsAna_;
+  bool FlagMuonsAll_;
   double MinMuonPt_;
   double MaxMuonPt_;
   double MuonIso_;
-  bool MuonIsoCut_;
   int MuonID_;
-  bool MuonIDCut_;
   int MinNMuons_;
   int MaxNMuons_;
   double MinMET_;
@@ -123,6 +131,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   //Analysis variables
   std::vector<XYZTLorentzVector> AnaMuons;
+  std::vector<XYZTLorentzVector> AllMuons;
   std::vector<XYZTLorentzVector> AnaJets;
   XYZTLorentzVector MET;
   int Nvertices, NObservedInTimePUVertices, NTruePUInteractions;
@@ -132,5 +141,6 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   double MT_LeadingMuon_MET;
   int NMuons, NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
   int NJets, NbJets;
+
   };
 #endif
