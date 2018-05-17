@@ -121,8 +121,14 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //Cleaning all variables
   Clean();
 
+  //Flags
+  bool FlagSaveEvent = false;
+  bool FlagPassTrigg = false;
+  bool FlagPassVertex = false;
+  bool FlagPassMuon = false;
   
   //////////////////////////Trigger//////////////////////////
+
   if ( FlagTrigger_OR_ || FlagTrigger_AND_ ){
     edm::Handle<edm::TriggerResults> triggerBits;
     edm::Handle<pat::TriggerObjectStandAlone> triggerObjects;
@@ -190,11 +196,14 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     
     if( FlagTrigger1 && FlagTrigger2 ){
-      
+      FlagPassTrigg = true;
       //Counting number of events which pass the triggers
       Dracarys::TriggerPathCut++;
-      if ( debug_ )  std::cout<< std::endl << "      !!!Event Pass Triggers!!!";
-      
+      if ( debug_ )  {
+	if ( !FlagTrigger1 ) std::cout<< "No And Triggers by Flag" << std::endl;
+	if ( !FlagTrigger2 ) std::cout<< "No Or Triggers by Flag" << std::endl;
+	std::cout<< std::endl << "      !!!Event Pass Triggers!!!";
+      }
     }
   }
   ////////////////////////END Trigger////////////////////////
@@ -222,8 +231,14 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
     
-    if (flagGoodVertex) Dracarys::GoodVertex++;
-    
+    if (flagGoodVertex) {
+      Dracarys::GoodVertex++;
+      FlagPassVertex = true;
+      if ( debug_ ) std::cout<< "Number of Good Vertices: "<< Nvertices << std::endl;
+    }
+  }else{
+    FlagPassVertex = true;
+    if ( debug_ ) std::cout<< "No vertex is asked" << std::endl;
   }
     
   //For the tighmuon
@@ -237,22 +252,16 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<edm::View<pat::Muon> > muons;
   iEvent.getByToken(tok_muons_, muons);
   
-
+  if (!FlagMuonsAna_) FlagPassMuon=true;//For no muon cuts   
   if( (muons->size() > 0) && FlagMuonsAna_ ){ //More than 0 and the flag
     
-    bool flagMuonChooser=false;
     int OurMuonDefinitionCounter=0;
-    
-    //Temporary vector muon info container
-    std::vector<XYZTLorentzVector> tempMuons;
-    std::vector<double> tempMuon_charge, tempCombined_Iso;
-    std::vector <bool> tempMuon_loose, tempMuon_medium, tempMuon_tight;
-    
     int MuTigIDCount = 0;
     int MuMedIDCount = 0;
     int MuLooIDCount = 0;
     int MuISOCount = 0;
     int MuIDCount =0;
+    bool MuonChooser = false;
     
     if (debug_) std::cout << "Muon counter loop" << std::endl;
     for(edm::View<pat::Muon>::const_iterator muon=muons->begin(); muon!=muons->end(); ++muon){
@@ -296,7 +305,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
       }
       ////MUON Kinematic////
-      
+      // Could be the eta, phy, ...
       if( (muon->pt() > MinMuonPt_) && (muon->pt() < MaxMuonPt_) ) {
 	flagPtCut = true;
       }else{
@@ -313,51 +322,87 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if ( flagMuID && flagMuIso && flagPtCut ){
 	OurMuonDefinitionCounter++;
 	XYZTLorentzVector mu(muon->px(), muon->py(), muon->pz(), muon->energy());
-	tempMuons.push_back(mu);
-	tempMuon_charge.push_back(muon->charge());
-	tempCombined_Iso.push_back(MuonIso);
-	tempMuon_loose.push_back(muon->isLooseMuon()); 
-	tempMuon_medium.push_back(muon->isMediumMuon()); 
-	tempMuon_tight.push_back(muon->isTightMuon(vertex));
+	AnaMuon.push_back(mu);
+	Muon_charge.push_back(muon->charge());
+	Combined_Iso.push_back(MuonIso);
+	Muon_loose.push_back(muon->isLooseMuon());
+	Muon_medium.push_back(muon->isMediumMuon());
+	Muon_tight.push_back(muon->isTightMuon(vertex));
+	MuonChooser = true;
       }
       
-    }//End For Muons
-    if (debug_) std::cout <<"OurMuonDefinitionCounter"<<OurMuonDefinitionCounter << std::endl;
-    
-    if ( (OurMuonDefinitionCounter>=MinNMuons_) && (OurMuonDefinitionCounter<=MaxNMuons_)) {
-      flagMuonChooser=true;
-      if (debug_) std::cout <<"MuonChooser PASS" << std::endl;
-    }
-    
-    if ( flagMuonChooser ){
-      Dracarys::LeadingMuPtM3++;
-      //TTree Filling
-      NMuons=OurMuonDefinitionCounter;
-      //NMuons= muons->size();//The multiplicity without cuts
-      AnaMuons = tempMuons;
-      Muon_charge = tempMuon_charge;
-      Combined_Iso = tempCombined_Iso;
-      Muon_loose = tempMuon_loose; 
-      Muon_medium = tempMuon_medium; 
-      Muon_tight = tempMuon_tight;
+    }//End For AnaMuons
+
+    if ( MuonChooser ){
       NMuonstight = MuTigIDCount;
       NMuonsmedium = MuMedIDCount;
       NMuonsloose = MuLooIDCount;
       NMuonsIso = MuISOCount;
-      NMuonsID =MuIDCount;
-    }	
+      NMuonsID = MuIDCount;
+    }
     
-  }//End If
+    if (debug_) std::cout <<"OurMuonDefinitionCounter"<<OurMuonDefinitionCounter << std::endl;
+    
+    if ( (OurMuonDefinitionCounter>=MinNMuons_) && (OurMuonDefinitionCounter<=MaxNMuons_)) {
+      FlagPassMuon = true;
+      if (debug_) std::cout <<"PASS Muon Cuts" << std::endl;
+    }
+    	
+    
+  }//End If AnaMuons
 
+   if( (muons->size() > 0) && FlagMuonsAll_ ){
 
+     int MuLooIDCount = 0;
+     int MuMedIDCount = 0;
+     int MuTigIDCount = 0;
+     
+     for(edm::View<pat::Muon>::const_iterator muon=muons->begin(); muon!=muons->end(); ++muon){
+       
+       double MuonIso = (muon->pfIsolationR04().sumChargedHadronPt	\
+			 +  max(0., muon->pfIsolationR04().sumNeutralHadronEt + muon->pfIsolationR04().sumPhotonEt - \
+				0.5*muon->pfIsolationR04().sumPUPt))/muon->pt();
+       
+       if ( muon->isLooseMuon() ) MuLooIDCount++;
+       if ( muon->isMediumMuon() ) MuMedIDCount++;
+       if ( muon->isTightMuon(vertex) ) MuTigIDCount++;
 
-
-  /////////////////////////END Muons/////////////////////////
+       XYZTLorentzVector mu(muon->px(), muon->py(), muon->pz(), muon->energy());
+       AllMuon.push_back(mu);
+       AllMuon_charge.push_back(muon->charge());
+       AllCombined_Iso.push_back(MuonIso);
+       AllMuon_loose.push_back(muon->isLooseMuon());
+       AllMuon_medium.push_back(muon->isMediumMuon());
+       AllMuon_tight.push_back(muon->isTightMuon(vertex));
+       
+     }
+     
+     AllNMuonstight = MuTigIDCount;
+     AllNMuonsmedium = MuMedIDCount;
+     AllNMuonsloose = MuLooIDCount;
+       
+     
+   }//End if AllMuons
   
 
 
 
+   /////////////////////////END Muons/////////////////////////
+   
+   ////////////////////////FILLING THE TREE//////////////////
 
+   /*************************Muons***************************/
+   if ( FlagPassMuon ){
+     Dracarys::LeadingMuPtM3++;
+     //NMuons=OurMuonDefinitionCounter;
+     
+    }
+
+   ///FlagSaveEvent Como lo conmuto!!
+
+
+   if ( FlagSaveEvent ) tree_->Fill();
+   
   if ( debug_ )  std::cout << std::endl << std::endl;
 }
 
@@ -365,6 +410,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 Dracarys::Clean()
 {
+  //See what else should I put here!!!!!!!!
   AnaMuons.clear();
   AnaJets.clear();
   MET = XYZTLorentzVector(0.0, 0.0, 0.0, 0.0);
@@ -386,7 +432,7 @@ Dracarys::Clean()
 // ------------ method called once each job just before starting event loop  ------------
 void Dracarys::beginJob()
 {
-
+  //Cuts by a map< std::string, int > name of the cut, and counter.
   Dracarys::NoCuts=0; 
   Dracarys::TriggerPathCut=0;
   Dracarys::GoodVertex=0;
@@ -403,14 +449,24 @@ void Dracarys::beginJob()
   tree_->Branch("AnaJets",&AnaJets);
   tree_->Branch("AnaMET",&MET);
   tree_->Branch("combinedSecondaryVertexbJetDiscriminator",&bJetDiscriminator);
+
   tree_->Branch("Combined_iso_DeltaBetaPU",&Combined_Iso);
-  tree_->Branch("AMuon_charge",&Muon_charge);
-  tree_->Branch("AMuonLooseID",&Muon_loose);
-  tree_->Branch("AMuonMediumID",&Muon_medium);
-  tree_->Branch("AMuonTightID",&Muon_tight);
-  tree_->Branch("AMuonMultiplicity",&NMuons);
-  tree_->Branch("AJetsMultiplicity",&NJets);
-  tree_->Branch("AbJetsMultiplicity",&NbJets);
+  tree_->Branch("AllCombined_iso_DeltaBetaPU",&AllCombined_Iso);
+
+  tree_->Branch("AnaMuon_charge",&Muon_charge);
+  tree_->Branch("AllMuon_charge",&AllMuon_charge);
+  
+  tree_->Branch("AnaMuonLooseID",&Muon_loose);
+  tree_->Branch("AnaMuonMediumID",&Muon_medium);
+  tree_->Branch("AnaMuonTightID",&Muon_tight);
+
+  tree_->Branch("AllMuonLooseID",&AllMuon_loose);
+  tree_->Branch("AllMuonMediumID",&AllMuon_medium);
+  tree_->Branch("AllMuonTightID",&AllMuon_tight);
+
+
+  tree_->Branch("AnaJetsMultiplicity",&NJets);
+  tree_->Branch("AnabJetsMultiplicity",&NbJets);
   tree_->Branch("MT_LeadingMuon_MET",&MT_LeadingMuon_MET);
   tree_->Branch("Vertices",&Nvertices);
   tree_->Branch("InTimePU",&NObservedInTimePUVertices);

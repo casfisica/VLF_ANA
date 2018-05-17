@@ -97,15 +97,23 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<string> TriggerPath1_;
   std::vector<string> TriggerPath2_;
   //////////////////////////////////////////
-  //Debugging option boolean
+
+  ///////Debugging option boolean//////////
+
   bool debug_;
-  //Cuts
-  //Vertices
+
+  /****************************************/
+  /****************Cuts********************/
+  /****************************************/
+ 
+  //////////////Vertices////////////////////
   bool FlagVertices_;
   int Pvtx_ndof_min_;
   double Pvtx_vtx_max_;
   double Pvtx_vtxdxy_max_;
-  //Muons
+  /////////////////////////////////////////
+
+  /////////////////Muons///////////////////
   bool FlagMuonsAna_;
   bool FlagMuonsAll_;
   double MinMuonPt_;
@@ -114,6 +122,9 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   int MuonID_;
   int MinNMuons_;
   int MaxNMuons_;
+  /////////////////////////////////////////
+
+  ///////////////////MET///////////////////
   double MinMET_;
   double MinJetPt_;
   double MaxJetEta_;
@@ -136,10 +147,14 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   XYZTLorentzVector MET;
   int Nvertices, NObservedInTimePUVertices, NTruePUInteractions;
   std::vector<double> Muon_charge, Combined_Iso;
+  std::vector<double> AllMuon_charge, AllCombined_Iso;
+  
   std::vector <bool> Muon_loose, Muon_medium, Muon_tight;
+  std::vector <bool> AllMuon_loose, AllMuon_medium, AllMuon_tight;
+
   std::vector<double> bJetDiscriminator;
   double MT_LeadingMuon_MET;
-  int NMuons, NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
+  int NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
   int NJets, NbJets;
 
   };
