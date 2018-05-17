@@ -26,12 +26,15 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(30) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.source = cms.Source("PoolSource",
                             
                             fileNames = cms.untracked.vstring(
-        'file:/eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/MINIAODSIM_1.root'
+        #Signal
+        #'file:/eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/MINIAODSIM_1.root'
+        #DY
+        'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root'
         )
                             )
 
@@ -49,12 +52,10 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Activate debug option
                               debug = cms.bool(True),
                               #Trigger variables
-                              FlagTrigger_AND = cms.bool(False),
-                              FlagTrigger_OR = cms.bool(True),
-                              TriggerPath1 = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#"HLT_DoubleMu3_PFMET50"),
-                              TriggerPath2 = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"),
-                              #TriggerPath1 = cms.vstring("HLT_PFHT300","HLT_CaloJet260"),
-                              #TriggerPath2 = cms.vstring("HLT_AK4CaloJet30","HLT_MonoCentralPFJet80_PFMETNoMu90_PFMHTNoMu90_IDTight","HLT_CaloJet260"),
+                              #TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
+                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
+                              TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
+                              TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
                               #Vertices
                               FlagVertices = cms.bool(True), #What to evaluate vertices
@@ -62,14 +63,14 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               Pvtx_vtx_max  = cms.double(24.),
                               Pvtx_vtxdxy_max = cms.double(24.),
                               #Muons
-                              FlagMuonsAna = cms.bool(True),#Want use muons (if is False will not apply any muon cut)
+                              FlagMuonsAna = cms.bool(True),#Want use muons (if is False, not muon cut will be applied)
                               FlagMuonsAll = cms.bool(True),#Want to save the full colection of muon (only the events that pass the general Cut)
-                              MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
-                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
-                              MuonIso = cms.double(0.15), #Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
-                              MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
+                              MinMuonPt = cms.double(0.0), #Min muon pt - for all muons -
+                              MaxMuonPt = cms.double(100000.0), #Max muon pt - for all muons -
+                              MuonIso = cms.double(100.0), #(0.15)Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
+                              MuonID = cms.int32(3), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
-                              MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
+                              MaxNMuons = cms.int32(1), #Maximum number of muons following our defintiion
                               #MET
                               MinMET = cms.double(50.0), #Min MET
                               MinJetPt = cms.double(30.0), #Min Jet Pt

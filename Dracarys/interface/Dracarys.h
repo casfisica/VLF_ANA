@@ -155,6 +155,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   std::vector<double> bJetDiscriminator;
   double MT_LeadingMuon_MET;
   int NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
+  int AllNMuonstight, AllNMuonsmedium, AllNMuonsloose;
   int NJets, NbJets;
 
   };
