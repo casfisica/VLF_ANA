@@ -75,10 +75,16 @@ Dracarys::Dracarys(const edm::ParameterSet& iConfig):
   MaxNMuons_ = (iConfig.getParameter<int>("MaxNMuons"));
   //MET
   MinMET_ = (iConfig.getParameter<double>("MinMET"));
-  MinJetPt_ = (iConfig.getParameter<double>("MinJetPt"));
-  MaxJetEta_ = (iConfig.getParameter<double>("MaxJetEta"));
+  MaxMET_ = (iConfig.getParameter<double>("MaxMET"));
+  //Jets
+  FlagJetsAna_ = (iConfig.getParameter<bool>("FlagJetsAna"));
+  FlagJetsAll_ = (iConfig.getParameter<bool>("FlagJetsAll"));
   MinNJets_ = (iConfig.getParameter<int>("MinNJets"));
   MaxNJets_ = (iConfig.getParameter<int>("MaxNJets"));
+  MinJetPt_ = (iConfig.getParameter<double>("MinJetPt"));
+  MaxJetEta_ = (iConfig.getParameter<double>("MaxJetEta"));
+  //BJets
+  FlagBJets_ = (iConfig.getParameter<bool>("FlagBJets"));
   bJetTag_ = (iConfig.getParameter<double>("bJetTag"));
   MinbJetPt_ = (iConfig.getParameter<double>("MinbJetPt"));
   MaxbJetEta_ = (iConfig.getParameter<double>("MaxbJetEta"));
@@ -124,6 +130,9 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool FlagPassTrigg = false;
   bool FlagPassVertex = false;
   bool FlagPassMuon = false;
+  bool FlagPassMET = false;
+  bool FlagPassJets = false;
+  bool FlagPassBJets = false;
   
   //////////////////////////Trigger//////////////////////////
 
@@ -202,7 +211,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   }else{
     FlagPassTrigg = true;
-     std::cout << "No trigger was asked" << std::endl;
+    if ( debug_ ) std::cout << "No trigger was asked" << std::endl;
   }
 
   ////////////////////////END Trigger////////////////////////
@@ -237,7 +246,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }else{
     FlagPassVertex = true;
-    if ( debug_ ) std::cout<< "No vertex is asked" << std::endl;
+    if ( debug_ ) std::cout<< "No vertex was asked" << std::endl;
   }
     
   //For the tighmuon
@@ -255,7 +264,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    
   if ( MinNMuons_ == 0 && muons->size()==0 ) FlagPassMuon=true;
 
-  if( (int) muons->size() >= MinNMuons_ &&  muons->size() > 0 ){ //Min number apply CAS
+  if( FlagMuonsAna_ && (int) muons->size() >= MinNMuons_ &&  muons->size() > 0 ){ //Min number apply CAS
     
     //bool flagMuonChooser=false;
     int OurMuonDefinitionCounter=0;
@@ -366,7 +375,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }  
   } else{//End If AnaMuons
     if (debug_ && FlagMuonsAna_ ) std::cout <<"No muons in the collection" << std::endl;
-    if (debug_ && !FlagMuonsAna_) std::cout <<"No muons cut asked" << std::endl;
+    if (debug_ && !FlagMuonsAna_) std::cout <<"No muon cut was asked" << std::endl;
   }
   
   
@@ -411,11 +420,97 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    /////////////////////////END Muons/////////////////////////
   
-   ////////////////////////FILLING THE TREE//////////////////
+  
+  /////////////////////////////MET////////////////////////////
+  /*Handling MET*/   
+  edm::Handle<pat::METCollection> mets;
+  iEvent.getByToken(tok_met_,mets);
+  const pat::MET &met = mets->front();
+  
+  if ( debug_ )  std::cout << "MET: "<< met.pt() << std::endl;
+
+  if (met.pt() >= MinMET_ && met.pt() <= MaxMET_){ 
+    Dracarys::MissingETCut++;
+    MET = XYZTLorentzVector(met.px(), met.py(), met.pz(), met.energy());
+    FlagPassMET = true;
+    if ( debug_ )  std::cout << "Pass MET cuts" << std::endl;
+  }
+
+  ///////////////////////////END MET//////////////////////////
+
+
+
+  /////////////////////////////JETS///////////////////////////
+  /*Handling Jets*/
+  edm::Handle<edm::View<pat::Jet> > jets;
+  iEvent.getByToken(tok_jets_,jets);
+
+  if (!FlagJetsAna_) FlagPassJets = true ;
+  if (!FlagBJets_)  FlagPassBJets = true ;
+   
+  if (MinNJets_ == 0 && jets->size() == 0 && FlagJetsAna_ ) FlagPassJets = true ;
+  
+  if( (jets->size() > 0) && ( FlagJetsAna_ || FlagBJets_) ){ 
+    
+    for(edm::View<pat::Jet>::const_iterator jet=jets->begin(); jet!=jets->end(); ++jet){
+      
+      XYZTLorentzVector je(jet->px(), jet->py(), jet->pz(), jet->energy());
+      
+      if (debug_) std::cout <<"Jet Pt: " << je.Pt() <<std::endl;
+      
+      if( (jet->pt() > MinJetPt_ ) && (abs(jet->eta()) < MaxJetEta_ ) ) {
+	AnaJets.push_back(je);
+	bJetDiscriminator.push_back(jet->bDiscriminator("combinedSecondaryVertexBJetTags"));
+      }
+      if( (jet->pt() > MinbJetPt_) && (abs(jet->eta()) < MaxbJetEta_) && (jet->bDiscriminator("combinedSecondaryVertexBJetTags")>bJetTag_) ) {
+	BJets.push_back(je);
+	
+      }
+    }//END JETS FOR
+    
+    if (debug_) std::cout <<"OurJets Multiplicity: " << (int) AnaJets.size() <<std::endl;
+    if (debug_) std::cout <<"OurBJets Multiplicity: " << (int) BJets.size() <<std::endl;
+	 
+    
+    if ( ((int) AnaJets.size() >= MinNJets_) && ( (int) AnaJets.size() <= MaxNJets_) ) FlagPassJets = true;
+    if ( ( (int) BJets.size() >= MinNbJets_) && ( (int) BJets.size() <= MaxNbJets_) ) FlagPassBJets=true;
+    
+  }//END JETS IF
+
+    if ( debug_ && FlagPassJets ) std::cout << "Jet cuts PASS" <<std::endl;
+    if ( debug_ && FlagPassBJets ) std::cout << "BJet cuts PASS" <<std::endl;
+  
+  if(FlagJetsAll_ && jets->size() > 0 ){
+    for(edm::View<pat::Jet>::const_iterator jet=jets->begin(); jet!=jets->end(); ++jet){
+      XYZTLorentzVector je(jet->px(), jet->py(), jet->pz(), jet->energy());
+      //if (debug_) std::cout <<"Jet Pt: " << je.Pt() <<std::endl;
+      AllJets.push_back(je);
+      bAllJetDiscriminator.push_back(jet->bDiscriminator("combinedSecondaryVertexBJetTags"));
+    
+    }//END ALLJETS FOR
+    if (debug_) std::cout <<"AllJet Multiplicity : " << AllJets.size()  <<std::endl;
+  }
+
+  ///////////////////////////END JETS/////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ////////////////////////FILLING THE TREE//////////////////
   
    /*************************Muons***************************/
   
-  if ( FlagPassTrigg  && FlagPassVertex  && FlagPassMuon ) {
+  if ( FlagPassTrigg  && FlagPassVertex  && FlagPassMuon && FlagPassMET && FlagPassJets && FlagPassBJets ) {
     if ( debug_ )  std::cout << "Pass all cuts" << std::endl;
     FlagSaveEvent = true;
   }
@@ -436,6 +531,8 @@ Dracarys::Clean()
   AnaMuons.clear();
   AllMuons.clear();
   AnaJets.clear();
+  AllJets.clear();
+  BJets.clear();
   MET = XYZTLorentzVector(0.0, 0.0, 0.0, 0.0);
   Nvertices=0;
   NObservedInTimePUVertices=0;
@@ -446,8 +543,6 @@ Dracarys::Clean()
   Muon_medium.clear();
   Muon_tight.clear();
   bJetDiscriminator.clear();
-  NJets=0;
-  NbJets=0;
   MT_LeadingMuon_MET=0;
 }
 
@@ -468,29 +563,31 @@ void Dracarys::beginJob()
   //Tree Structure -> branches should be declared in decreasing size  
   if(FlagMuonsAna_) tree_->Branch("AnaMuons",&AnaMuons);
   if(FlagMuonsAll_) tree_->Branch("AllMuons",&AllMuons);
-  tree_->Branch("AnaJets",&AnaJets);
+  if(FlagJetsAna_) tree_->Branch("AnaJets",&AnaJets);
+  if(FlagJetsAll_) tree_->Branch("AllJets",&AllJets);
+  if(FlagBJets_) tree_->Branch("BJets",&BJets);
   tree_->Branch("AnaMET",&MET);
-  tree_->Branch("combinedSecondaryVertexbJetDiscriminator",&bJetDiscriminator);
+  if(FlagJetsAna_) tree_->Branch("combinedSecondaryVertexbJetDiscriminator",&bJetDiscriminator);
+  if(FlagJetsAll_) tree_->Branch("AllcombinedSecondaryVertexbJetDiscriminator",&bAllJetDiscriminator);
 
   tree_->Branch("Combined_iso_DeltaBetaPU",&Combined_Iso);
   tree_->Branch("AllCombined_iso_DeltaBetaPU",&AllCombined_Iso);
 
-  tree_->Branch("AnaMuon_charge",&Muon_charge);
-  tree_->Branch("AllMuon_charge",&AllMuon_charge);
+  if(FlagMuonsAna_) tree_->Branch("AnaMuon_charge",&Muon_charge);
+  if(FlagJetsAll_) tree_->Branch("AllMuon_charge",&AllMuon_charge);
   
-  tree_->Branch("AnaMuonLooseID",&Muon_loose);
-  tree_->Branch("AnaMuonMediumID",&Muon_medium);
-  tree_->Branch("AnaMuonTightID",&Muon_tight);
+  if(FlagMuonsAna_) tree_->Branch("AnaMuonLooseID",&Muon_loose);
+  if(FlagMuonsAna_) tree_->Branch("AnaMuonMediumID",&Muon_medium);
+  if(FlagMuonsAna_) tree_->Branch("AnaMuonTightID",&Muon_tight);
 
-  tree_->Branch("AllMuonLooseID",&AllMuon_loose);
-  tree_->Branch("AllMuonMediumID",&AllMuon_medium);
-  tree_->Branch("AllMuonTightID",&AllMuon_tight);
+  if(FlagMuonsAll_) tree_->Branch("AllMuonLooseID",&AllMuon_loose);
+  if(FlagMuonsAll_) tree_->Branch("AllMuonMediumID",&AllMuon_medium);
+  if(FlagMuonsAll_) tree_->Branch("AllMuonTightID",&AllMuon_tight);
 
-
-  tree_->Branch("AnaJetsMultiplicity",&NJets);
-  tree_->Branch("AnabJetsMultiplicity",&NbJets);
   tree_->Branch("MT_LeadingMuon_MET",&MT_LeadingMuon_MET);
+
   tree_->Branch("Vertices",&Nvertices);
+
   tree_->Branch("InTimePU",&NObservedInTimePUVertices);
   tree_->Branch("TruePU",&NTruePUInteractions);
 
