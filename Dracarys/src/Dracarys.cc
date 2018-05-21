@@ -267,7 +267,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    
   if ( MinNMuons_ == 0 && muons->size()==0 ) FlagPassMuon=true;
 
-  if( FlagMuonsAna_ && (int) muons->size() >= MinNMuons_ &&  muons->size() > 0 ){ //Min number apply CAS
+  if( (FlagMuonsAna_ || FlagMuonsAll_) &&  muons->size() > 0 ){ //Min number apply CAS
     
     //bool flagMuonChooser=false;
     int OurMuonDefinitionCounter=0;
@@ -282,6 +282,13 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     int MuISOCount = 0;
     int MuIDCount =0;
     
+    int MuLooIDCountAll = 0;
+    int MuMedIDCountAll = 0;
+    int MuTigIDCountAll = 0;
+    int contadorAll = 0;
+
+
+
     if (debug_) std::cout << "Muon counter loop, Muon Number: " <<  muons->size() <<std::endl;
     for(edm::View<pat::Muon>::const_iterator muon=muons->begin(); muon!=muons->end(); ++muon){
       
@@ -351,8 +358,39 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       if (debug_) std::cout <<"OurMuonDefinitionCounter"<<OurMuonDefinitionCounter << std::endl;
       
+
+
+
+      if( FlagMuonsAll_ ){
+	
+	if ( muon->isLooseMuon() ) MuLooIDCountAll++;
+	if ( muon->isMediumMuon() ) MuMedIDCountAll++;
+	if ( muon->isTightMuon(vertex) ) MuTigIDCountAll++;
+	  
+	XYZTLorentzVector mu1(muon->px(), muon->py(), muon->pz(), muon->energy());
+	AllMuons.push_back(mu1);
+	AllMuon_charge.push_back(muon->charge());
+	AllCombined_Iso.push_back(MuonIso);
+	AllMuon_loose.push_back(muon->isLooseMuon());
+	AllMuon_medium.push_back(muon->isMediumMuon());
+	AllMuon_tight.push_back(muon->isTightMuon(vertex));
+	  
+	contadorAll++;
+      	
+      }
+
+
     }//endfor muons
     
+    if( FlagMuonsAll_ ){
+      AllNMuonstight = MuTigIDCount;
+      AllNMuonsmedium = MuMedIDCount;
+      AllNMuonsloose = MuLooIDCount;
+      
+      if ( debug_ )  std::cout << "Number of allmuons: "<< contadorAll << std::endl;
+    }
+
+
     if ( (OurMuonDefinitionCounter>=MinNMuons_) && (OurMuonDefinitionCounter<=MaxNMuons_)) {
       FlagPassMuon =true;
       if (debug_) std::cout <<"MuonChooser PASS" << std::endl;
@@ -382,41 +420,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   
   
-  if( (muons->size() > 0) && FlagMuonsAll_ ){
-    
-    int MuLooIDCount = 0;
-    int MuMedIDCount = 0;
-    int MuTigIDCount = 0;
-    int contador = 0;
-
-    for(edm::View<pat::Muon>::const_iterator muon=muons->begin(); muon!=muons->end(); ++muon){
-      
-      double MuonIso = (muon->pfIsolationR04().sumChargedHadronPt	\
-			+  max(0., muon->pfIsolationR04().sumNeutralHadronEt + muon->pfIsolationR04().sumPhotonEt - \
-			       0.5*muon->pfIsolationR04().sumPUPt))/muon->pt();
-      
-      if ( muon->isLooseMuon() ) MuLooIDCount++;
-      if ( muon->isMediumMuon() ) MuMedIDCount++;
-      if ( muon->isTightMuon(vertex) ) MuTigIDCount++;
-      
-      XYZTLorentzVector mu1(muon->px(), muon->py(), muon->pz(), muon->energy());
-      AllMuons.push_back(mu1);
-      AllMuon_charge.push_back(muon->charge());
-      AllCombined_Iso.push_back(MuonIso);
-      AllMuon_loose.push_back(muon->isLooseMuon());
-      AllMuon_medium.push_back(muon->isMediumMuon());
-      AllMuon_tight.push_back(muon->isTightMuon(vertex));
-      
-      contador++;
-    }
-    
-    AllNMuonstight = MuTigIDCount;
-    AllNMuonsmedium = MuMedIDCount;
-    AllNMuonsloose = MuLooIDCount;
-    
-    if ( debug_ )  std::cout << "Number of allmuons: "<< contador << std::endl;
-    
-  }//End if AllMuons
+//End if AllMuons
   
   
 
@@ -582,7 +586,11 @@ Dracarys::Clean()
   AllNMuonstight = 0;
   AllNMuonsmedium = 0;
   AllNMuonsloose = 0;
-
+  AllMuon_charge.clear();
+  AllCombined_Iso.clear();
+  AllMuon_loose.clear();
+  AllMuon_medium.clear();
+  AllMuon_tight.clear();
 
 }
 
