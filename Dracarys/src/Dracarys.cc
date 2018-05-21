@@ -209,7 +209,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       FlagPassTrigg = true;
       //Counting number of events which pass the triggers
       Dracarys::TriggerPathCut++;
-      std::cout<< std::endl << "      !!!Event Pass Triggers!!!";
+      if ( debug_ ) std::cout<< std::endl << "Triggers cuts PASS";
     }
   
   }else{
@@ -579,6 +579,11 @@ Dracarys::Clean()
   Muon_tight.clear();
   bJetDiscriminator.clear();
   MT_LeadingMuon_MET=0;
+  AllNMuonstight = 0;
+  AllNMuonsmedium = 0;
+  AllNMuonsloose = 0;
+
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------

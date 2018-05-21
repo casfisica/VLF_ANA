@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("Demo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
@@ -26,7 +26,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(20) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.source = cms.Source("PoolSource",
                             
@@ -53,7 +53,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Is Data boolean
                               is_data = cms.bool(False),
                               #Activate debug option
-                              debug = cms.bool(True),
+                              debug = cms.bool(False),
                               #Trigger variables
                               #TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
                               #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
@@ -68,12 +68,12 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Muons
                               FlagMuonsAna = cms.bool(True),#Want use muons (if is False, not muon cut will be applied)
                               FlagMuonsAll = cms.bool(True),#Want to save the full colection of muon (only the events that pass the general Cut)
-                              MinMuonPt = cms.double(0.0), #Min muon pt - for all muons -
-                              MaxMuonPt = cms.double(100000.0), #Max muon pt - for all muons -
+                              MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
+                              MaxMuonPt = cms.double(10000.0), #Max muon pt - for all muons -
                               MuonIso = cms.double(100.0), #(0.15)Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
-                              MuonID = cms.int32(3), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
+                              MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
-                              MaxNMuons = cms.int32(1), #Maximum number of muons following our defintiion
+                              MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
                               #MET
                               MinMET = cms.double(0.0), #Min MET
                               MaxMET = cms.double(50000.0), #Max MET
@@ -81,7 +81,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               FlagJetsAna = cms.bool(True),#Want use jets (if is False, no jets cut will be applied)
                               FlagJetsAll = cms.bool(True), #Collec all jets in the collection
                               MinNJets = cms.int32(1), #Minimal number of jets following our definition
-                              MaxNJets = cms.int32(2), #Maximum number of jets following our defintion
+                              MaxNJets = cms.int32(5), #Maximum number of jets following our defintion
                               MinJetPt = cms.double(30.0), #Min Jet Pt (30.0)
                               MaxJetEta = cms.double(5.0), #Max Jet Eta (5.0)
                               #BJet
@@ -96,6 +96,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               MinMTMuonMet =  cms.double(0.0),
                               MaxMTMuonMet =  cms.double(100.0),
                               )
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("Tree.root"),
                                    closeFileFast = cms.untracked.bool(True)
