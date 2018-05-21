@@ -90,6 +90,8 @@ Dracarys::Dracarys(const edm::ParameterSet& iConfig):
   MaxbJetEta_ = (iConfig.getParameter<double>("MaxbJetEta"));
   MinNbJets_ = (iConfig.getParameter<int>("MinNbJets"));
   MaxNbJets_ = (iConfig.getParameter<int>("MaxNbJets"));
+  //MTMuonMET
+  FlagMTMuonMET_ = (iConfig.getParameter<bool>("FlagMTMuonMET"));
   MinMTMuonMet_ = (iConfig.getParameter<double>("MinMTMuonMet"));
   MaxMTMuonMet_ = (iConfig.getParameter<double>("MaxMTMuonMet"));
   //Create a TTree
@@ -133,6 +135,7 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool FlagPassMET = false;
   bool FlagPassJets = false;
   bool FlagPassBJets = false;
+  bool FlagPassMTMuonMET =false;
   
   //////////////////////////Trigger//////////////////////////
 
@@ -462,9 +465,10 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	AnaJets.push_back(je);
 	bJetDiscriminator.push_back(jet->bDiscriminator("combinedSecondaryVertexBJetTags"));
       }
-      if( (jet->pt() > MinbJetPt_) && (abs(jet->eta()) < MaxbJetEta_) && (jet->bDiscriminator("combinedSecondaryVertexBJetTags")>bJetTag_) ) {
-	BJets.push_back(je);
-	
+      if (FlagBJets_){
+	if( (jet->pt() > MinbJetPt_) && (abs(jet->eta()) < MaxbJetEta_) && (jet->bDiscriminator("combinedSecondaryVertexBJetTags")>bJetTag_) ) {
+	  BJets.push_back(je);
+	}
       }
     }//END JETS FOR
     
@@ -486,32 +490,63 @@ Dracarys::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //if (debug_) std::cout <<"Jet Pt: " << je.Pt() <<std::endl;
       AllJets.push_back(je);
       bAllJetDiscriminator.push_back(jet->bDiscriminator("combinedSecondaryVertexBJetTags"));
-    
+      
     }//END ALLJETS FOR
     if (debug_) std::cout <<"AllJet Multiplicity : " << AllJets.size()  <<std::endl;
   }
-
+  
   ///////////////////////////END JETS/////////////////////////
+  
+  
+  ///////////////////////////MTMuonMET/////////////////////////
+  
+  if( !FlagMTMuonMET_ ) {
+    if (debug_) std::cout << "No MTMuonMET cut was asked" << std::endl;
+    FlagPassMTMuonMET = true;
+  }
 
-
-
-
-
-
-
-
-
-
-
+  if( FlagMTMuonMET_ && muons->size() > 0){
+    
+    TLorentzVector LeadingMuon, Met;
+    bool FlagNoMuon = false;
+    
+    //if no cuts in muon is asked, the MTMuonMET will be calculated using the leading muon in the collection
+    if( !FlagMuonsAna_ ){
+      const auto& mu = muons-> at(0);
+      LeadingMuon.SetPxPyPzE(mu.px(), mu.py(), mu.pz(), mu.energy());
+      FlagNoMuon = false;
+    }else if (AnaMuons.size() > 0 ){
+      LeadingMuon.SetPxPyPzE(AnaMuons[0].px(), AnaMuons[0].py(), AnaMuons[0].pz(), AnaMuons[0].energy());
+    }else{
+      FlagNoMuon = true;
+      FlagPassMTMuonMET = false;
+      if (debug_) std::cout << "No muons in our definition to calculate MTMuonMET" << std::endl;
+    }
+    
+    if( !FlagNoMuon ){
+      Met.SetPxPyPzE(MET.px(), MET.py(), MET.pz(), MET.energy());
+      MT_LeadingMuon_MET = sqrt(2*LeadingMuon.Pt()*Met.Pt()*(1-cos(LeadingMuon.DeltaPhi(Met))));
+      
+      if ( (MT_LeadingMuon_MET < MinMTMuonMet_) || (MT_LeadingMuon_MET > MaxMTMuonMet_) ) {
+	FlagPassMTMuonMET = false;
+	//MuonMetMTCut++;
+      }else{
+	FlagPassMTMuonMET = true;
+      }
+    }
+    if ( debug_ && FlagPassMTMuonMET ) std::cout << "MTMuonMET cut PASS" << std::endl;
+  }//END if MT
+   
+  
+  
+  /////////////////////////END MTMuonMET///////////////////////
 
 
 
  ////////////////////////FILLING THE TREE//////////////////
-  
-   /*************************Muons***************************/
-  
-  if ( FlagPassTrigg  && FlagPassVertex  && FlagPassMuon && FlagPassMET && FlagPassJets && FlagPassBJets ) {
-    if ( debug_ )  std::cout << "Pass all cuts" << std::endl;
+    
+  if ( FlagPassTrigg  && FlagPassVertex  && FlagPassMuon && FlagPassMET && FlagPassJets && FlagPassBJets && FlagPassMTMuonMET ) {
+    if ( debug_ )  std::cout << "PASS ALL THE CUTS" << std::endl;
     FlagSaveEvent = true;
   }
   
@@ -583,8 +618,8 @@ void Dracarys::beginJob()
   if(FlagMuonsAll_) tree_->Branch("AllMuonLooseID",&AllMuon_loose);
   if(FlagMuonsAll_) tree_->Branch("AllMuonMediumID",&AllMuon_medium);
   if(FlagMuonsAll_) tree_->Branch("AllMuonTightID",&AllMuon_tight);
-
-  tree_->Branch("MT_LeadingMuon_MET",&MT_LeadingMuon_MET);
+ 
+  if(FlagMTMuonMET_)tree_->Branch("MT_LeadingMuon_MET",&MT_LeadingMuon_MET);
 
   tree_->Branch("Vertices",&Nvertices);
 

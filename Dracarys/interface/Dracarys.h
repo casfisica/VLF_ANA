@@ -142,6 +142,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   int MinNbJets_;
   int MaxNbJets_;
 /////////////////MTMuonMET/////////////////
+  bool FlagMTMuonMET_;
   double MinMTMuonMet_;
   double MaxMTMuonMet_;
   // TTree
