@@ -582,6 +582,7 @@ Dracarys::Clean()
   Muon_medium.clear();
   Muon_tight.clear();
   bJetDiscriminator.clear();
+  bAllJetDiscriminator.clear();
   MT_LeadingMuon_MET=0;
   AllNMuonstight = 0;
   AllNMuonsmedium = 0;
