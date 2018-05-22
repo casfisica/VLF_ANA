@@ -26,7 +26,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
                             
@@ -55,9 +55,10 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Activate debug option
                               debug = cms.bool(False),
                               #Trigger variables
-                              #TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
+                              FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
+                              TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
                               #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
-                              TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
+                              #TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
                               TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
                               #Vertices
@@ -69,14 +70,15 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               FlagMuonsAna = cms.bool(True),#Want use muons (if is False, not muon cut will be applied)
                               FlagMuonsAll = cms.bool(True),#Want to save the full colection of muon (only the events that pass the general Cut)
                               MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
-                              MaxMuonPt = cms.double(10000.0), #Max muon pt - for all muons -
-                              MuonIso = cms.double(100.0), #(0.15)Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
+                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
+                              MuonIso = cms.double(0.15), #(0.15)Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
                               MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
                               MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
                               #MET
-                              MinMET = cms.double(0.0), #Min MET
-                              MaxMET = cms.double(50000.0), #Max MET
+                              FlagMET=  cms.bool(True),#Want to use MET cuts
+                              MinMET = cms.double(50.0), #Min MET
+                              MaxMET = cms.double(13000.0), #Max MET
                               #Jets
                               FlagJetsAna = cms.bool(True),#Want use jets (if is False, no jets cut will be applied)
                               FlagJetsAll = cms.bool(True), #Collec all jets in the collection
@@ -90,7 +92,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               MinbJetPt = cms.double(30.0), #Min b Jet Pt (30.0)
                               MaxbJetEta = cms.double(2.4), #Max b Jet Eta (2.4)
                               MinNbJets = cms.int32(0), #Minimal number of Bjets following our definition
-                              MaxNbJets = cms.int32(100), #Maximum number of Bjets following our defintion
+                              MaxNbJets = cms.int32(0), #Maximum number of Bjets following our defintion
                               #MTMuonMET
                               FlagMTMuonMET =  cms.bool(True),#
                               MinMTMuonMet =  cms.double(0.0),

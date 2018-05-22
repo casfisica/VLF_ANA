@@ -75,15 +75,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   /// histograms
   //  std::map<std::string,TH1F*> histContainer_;
   //Counters
-  static int NoCuts; 
-  static int TriggerPathCut;
-  static int GoodVertex;
-  static int aJetatLessCut;
-  static int LeadingMuPtM3;
-  static int MissingETCut;
-  static int BasicJetsCut;
-  static int bJetsCut;
-  static int MuonMetMTCut;
+  static std::map<std::string, Int_t> CutFlow;
  
  //Is data boolean
   bool is_data_;
@@ -92,8 +84,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   //determine if event passes triggers
   /*Une vector to the triggers paths to be computed as AND, and the other to be computed as OR*/
   /**/
-  bool FlagTrigger_AND_;
-  bool FlagTrigger_OR_;
+  bool FlagTrigger_;
   std::vector<string> TriggerPath1_;
   std::vector<string> TriggerPath2_;
   //////////////////////////////////////////
@@ -125,6 +116,7 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   /////////////////////////////////////////
 
   ///////////////////MET///////////////////
+  bool FlagMET_;
   double MinMET_;
   double MaxMET_;
   //////////////////JETS///////////////////
