@@ -75,47 +75,66 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   /// histograms
   //  std::map<std::string,TH1F*> histContainer_;
   //Counters
-  static int NoCuts; 
-  static int TriggerPathCut;
-  static int GoodVertex;
-  static int aJetatLessCut;
-  static int LeadingMuPtM3;
-  static int MissingETCut;
-  static int BasicJetsCut;
-  static int bJetsCut;
-  static int MuonMetMTCut;
-  
-  //Is data boolean
+  static std::map<std::string, Int_t> CutFlow;
+ 
+ //Is data boolean
   bool is_data_;
+  
+  ////////////////TRIGGER////////////////////
   //determine if event passes triggers
-  bool isTrigger_;
-  bool isTriggerToo_;
-  string TriggerPath1_;
-  string TriggerPath2_;
-  //Debugging option boolean
+  /*Une vector to the triggers paths to be computed as AND, and the other to be computed as OR*/
+  /**/
+  bool FlagTrigger_;
+  std::vector<string> TriggerPath1_;
+  std::vector<string> TriggerPath2_;
+  //////////////////////////////////////////
+
+  ///////Debugging option boolean//////////
+
   bool debug_;
-  //Cuts
+
+  /****************************************/
+  /****************Cuts********************/
+  /****************************************/
+ 
+  //////////////Vertices////////////////////
+  bool FlagVertices_;
   int Pvtx_ndof_min_;
   double Pvtx_vtx_max_;
   double Pvtx_vtxdxy_max_;
+  /////////////////////////////////////////
+
+  /////////////////Muons///////////////////
+  bool FlagMuonsAna_;
+  bool FlagMuonsAll_;
   double MinMuonPt_;
   double MaxMuonPt_;
   double MuonIso_;
-  bool MuonIsoCut_;
   int MuonID_;
-  bool MuonIDCut_;
   int MinNMuons_;
   int MaxNMuons_;
+  /////////////////////////////////////////
+
+  ///////////////////MET///////////////////
+  bool FlagMET_;
   double MinMET_;
-  double MinJetPt_;
-  double MaxJetEta_;
+  double MaxMET_;
+  //////////////////JETS///////////////////
+  bool FlagJetsAna_;
+  bool FlagJetsAll_;
   int MinNJets_;
   int MaxNJets_;
+  double MinJetPt_;
+  double MaxJetEta_;
+///////////////////BJETS///////////////////
+  bool FlagBJets_;
   double bJetTag_;
   double MinbJetPt_;
   double MaxbJetEta_;
   int MinNbJets_;
   int MaxNbJets_;
+/////////////////MTMuonMET/////////////////
+  bool FlagMTMuonMET_;
   double MinMTMuonMet_;
   double MaxMTMuonMet_;
   // TTree
@@ -123,14 +142,24 @@ class Dracarys : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   //Analysis variables
   std::vector<XYZTLorentzVector> AnaMuons;
+  std::vector<XYZTLorentzVector> AllMuons;
   std::vector<XYZTLorentzVector> AnaJets;
+  std::vector<XYZTLorentzVector> AllJets;
+  std::vector<XYZTLorentzVector> BJets;
   XYZTLorentzVector MET;
   int Nvertices, NObservedInTimePUVertices, NTruePUInteractions;
   std::vector<double> Muon_charge, Combined_Iso;
+  std::vector<double> AllMuon_charge, AllCombined_Iso;
+  
   std::vector <bool> Muon_loose, Muon_medium, Muon_tight;
+  std::vector <bool> AllMuon_loose, AllMuon_medium, AllMuon_tight;
+
   std::vector<double> bJetDiscriminator;
+  std::vector<double> bAllJetDiscriminator;
   double MT_LeadingMuon_MET;
-  int NMuons, NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
+  int NMuonstight, NMuonsmedium, NMuonsloose, NMuonsIso, NMuonsID;
+  int AllNMuonstight, AllNMuonsmedium, AllNMuonsloose;
   int NJets, NbJets;
+
   };
 #endif
