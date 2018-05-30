@@ -33,5 +33,13 @@ crab status -d crab_projects/YOUR_CRAB_TASK_DIRECTORY/
 #Resubmitting failed jobs (check in the status output if the jobs can be resubmitted):  
 crab resubmit -d crab_projects/YOUR_CRAB_TASK_DIRECTORY/  
 ```
-
 <par>A good tutorial on crab can be found here: https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookCRAB3Tutorial  </par>
+
+
+## Runing the submit scripts
+<par>To send many samples at the same time you can use the <i>Submit_*.py</i> scripts in the <i>test</i> folder </par>
+
+```bash
+./Submit_DYPlusJets.py
+
+```
