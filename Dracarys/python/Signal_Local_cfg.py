@@ -7,7 +7,7 @@ import commands as cmd
 process = cms.Process("Demo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
@@ -114,6 +114,8 @@ process.source = cms.Source("PoolSource",
 #                                                              )
                             )
 
+
+
 process.demo = cms.EDAnalyzer('Dracarys',
                               bits = cms.InputTag("TriggerResults","","HLT"),
                               prescales = cms.InputTag("patTrigger"),
@@ -127,29 +129,51 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               is_data = cms.bool(False),
                               #Activate debug option
                               debug = cms.bool(False),
+                              #Trigger variables
+                              FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
+                              TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
+                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
+                              #TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
+                              TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
+                              #Vertices
+                              FlagVertices = cms.bool(True), #What to evaluate vertices
                               Pvtx_ndof_min   = cms.int32(4), #Vertices DOF
                               Pvtx_vtx_max  = cms.double(24.),
                               Pvtx_vtxdxy_max = cms.double(24.),
+                              #Muons
+                              FlagMuonsAna = cms.bool(True),#Want use muons (if is False, not muon cut will be applied)
+                              FlagMuonsAll = cms.bool(True),#Want to save the full colection of muon (only the events that pass the general Cut)
                               MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
-                              MaxMuonPt = cms.double(50.0), #Min muon pt - for all muons -
-                              MuonIso = cms.double(0.15), #Combined isolation with delta beta PU corrections
-                              MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight
+                              MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
+                              MuonIso = cms.double(0.15), #(0.15)Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
+                              MuonID = cms.int32(1), #0: Loose, 1: Medium, 2: Tight, 3: No Cut
                               MinNMuons = cms.int32(1), #Minimal number of muons following our definition
-                              MaxNMuons = cms.int32(999), #Maximum number of muons following our defintiion
+                              MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
+                              #MET
+                              FlagMET=  cms.bool(True),#Want to use MET cuts
                               MinMET = cms.double(50.0), #Min MET
-                              MinJetPt = cms.double(30.0), #Min Jet Pt
-                              MaxJetEta = cms.double(5.0), #Max Jet Eta
-                              bJetTag = cms.double(0.8484), #b-jet ID working point
-                              MinbJetPt = cms.double(30.0), #Min b Jet Pt
-                              MaxbJetEta = cms.double(2.4), #Max b Jet Eta
+                              MaxMET = cms.double(13000.0), #Max MET
+                              #Jets
+                              FlagJetsAna = cms.bool(True),#Want use jets (if is False, no jets cut will be applied)
+                              FlagJetsAll = cms.bool(True), #Collec all jets in the collection
                               MinNJets = cms.int32(1), #Minimal number of jets following our definition
-                              MaxNJets = cms.int32(999), #Maximum number of jets following our defintion
-                              MinNbJets = cms.int32(0), #Minimal number of jets following our definition
-                              MaxNbJets = cms.int32(999), #Maximum number of jets following our defintion
+                              MaxNJets = cms.int32(5), #Maximum number of jets following our defintion
+                              MinJetPt = cms.double(30.0), #Min Jet Pt (30.0)
+                              MaxJetEta = cms.double(5.0), #Max Jet Eta (5.0)
+                              #BJet
+                              FlagBJets = cms.bool(True),#Want use bjets
+                              bJetTag = cms.double(0.8484), #b-jet ID working point
+                              MinbJetPt = cms.double(30.0), #Min b Jet Pt (30.0)
+                              MaxbJetEta = cms.double(2.4), #Max b Jet Eta (2.4)
+                              MinNbJets = cms.int32(0), #Minimal number of Bjets following our definition
+                              MaxNbJets = cms.int32(0), #Maximum number of Bjets following our defintion
+                              #MTMuonMET
+                              FlagMTMuonMET =  cms.bool(True),#
                               MinMTMuonMet =  cms.double(0.0),
                               MaxMTMuonMet =  cms.double(100.0),
                               )
+
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("Signal.root"),
                                    closeFileFast = cms.untracked.bool(True)
