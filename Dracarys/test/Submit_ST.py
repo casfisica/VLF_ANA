@@ -1,3 +1,5 @@
+#!/usr/bin/python2.6
+
 import commands as cmd
 import time
 
