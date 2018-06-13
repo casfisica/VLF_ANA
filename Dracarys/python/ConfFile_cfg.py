@@ -32,9 +32,9 @@ process.source = cms.Source("PoolSource",
                             
                             fileNames = cms.untracked.vstring(
         #Signal
-        ##'file:/eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/MINIAODSIM_1.root'
+        'file:/eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/MINIAODSIM_1.root'
         #DY
-        'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root'
+        #'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root'
         #WJets
         #'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-70To100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/041642E9-E2C6-E611-8568-1866DAEB3628.root'
 #'root://cms-xrd-global.cern.ch//store/mc/RunIISummer16MiniAODv2/WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/120000/00FB7BDE-C2BD-E611-9528-0025905A6064.root'
@@ -56,10 +56,10 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               debug = cms.bool(False),
                               #Trigger variables
                               FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
-                              TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
-                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
-                              #TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
-                              TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
+                              #TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
+                              TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
+                              TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
+                              #TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
                               #Vertices
                               FlagVertices = cms.bool(True), #What to evaluate vertices
