@@ -30,7 +30,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ######GETTING ALL ROOT FILES#########
 SignalContent=cmd.getoutput('ls /eos/user/j/jruizalv/VLF_Samples/MINIAODSIM/')
@@ -131,10 +131,10 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               debug = cms.bool(False),
                               #Trigger variables
                               FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
-                              TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
-                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
-                              #TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
-                              TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
+                              #TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
+                              TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
+                              TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
+                              #TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
                               #Vertices
                               FlagVertices = cms.bool(True), #What to evaluate vertices
