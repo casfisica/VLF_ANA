@@ -131,10 +131,10 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               debug = cms.bool(False),
                               #Trigger variables
                               FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
-                              #TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
-                              TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
-                              TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
-                              #TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
+                              TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
+                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
+                              #TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
+                              TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
                               #Vertices
                               FlagVertices = cms.bool(True), #What to evaluate vertices
@@ -143,7 +143,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               Pvtx_vtxdxy_max = cms.double(24.),
                               #Muons
                               FlagMuonsAna = cms.bool(True),#Want use muons (if is False, not muon cut will be applied)
-                              FlagMuonsAll = cms.bool(True),#Want to save the full colection of muon (only the events that pass the general Cut)
+                              FlagMuonsAll = cms.bool(False),#Want to save the full colection of muon (only the events that pass the general Cut)
                               MinMuonPt = cms.double(3.0), #Min muon pt - for all muons -
                               MaxMuonPt = cms.double(60.0), #Max muon pt - for all muons -
                               MuonIso = cms.double(0.15), #(0.15)Combined isolation with delta beta PU corrections (put 100 if do not want the cut)
@@ -152,11 +152,11 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               MaxNMuons = cms.int32(2), #Maximum number of muons following our defintiion
                               #MET
                               FlagMET=  cms.bool(True),#Want to use MET cuts
-                              MinMET = cms.double(50.0), #Min MET
+                              MinMET = cms.double(200.0), #Min MET
                               MaxMET = cms.double(13000.0), #Max MET
                               #Jets
                               FlagJetsAna = cms.bool(True),#Want use jets (if is False, no jets cut will be applied)
-                              FlagJetsAll = cms.bool(True), #Collec all jets in the collection
+                              FlagJetsAll = cms.bool(False), #Collec all jets in the collection
                               MinNJets = cms.int32(1), #Minimal number of jets following our definition
                               MaxNJets = cms.int32(5), #Maximum number of jets following our defintion
                               MinJetPt = cms.double(30.0), #Min Jet Pt (30.0)
@@ -171,7 +171,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #MTMuonMET
                               FlagMTMuonMET =  cms.bool(True),#
                               MinMTMuonMet =  cms.double(0.0),
-                              MaxMTMuonMet =  cms.double(100.0),
+                              MaxMTMuonMet =  cms.double(10000.0),
                               )
 
 process.TFileService = cms.Service("TFileService",
