@@ -57,7 +57,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Trigger variables
                               FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
                               TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
-                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"), #leve empty to not use a trigger
+                              #TriggerPathOR = cms.vstring("HLT_DoubleMu3_PFMET50","HLT_PFMET110_PFMHT110_IDTight"," HLT_DoubleMu3_PFMET_50"), #leve empty to not use a trigger
                               #TriggerPathAND = cms.vstring(),#leve empty to not use a trigger
                               TriggerPathOR = cms.vstring(),#leve empty to not use a trigger
                               #Cuts
