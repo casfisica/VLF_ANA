@@ -1,10 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
+
 process = cms.Process("Demo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
 
 process.load('TrackingTools.TransientTrack.TransientTrackBuilder_cfi')
 
@@ -21,18 +23,20 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 #  that is typically found in the DAS under the Configs for given dataset
 #  (although it can be "overridden" by requirements of a given release)
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+#process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.source = cms.Source("PoolSource",
                             
                             fileNames = cms.untracked.vstring(
-        'root://eoscms.cern.ch//eos/cms/store/data/Run2016C/DoubleMuon/MINIAOD/23Sep2016-v1/80000/0044DA75-708B-E611-8F8B-008CFA1974A4.root' #for data
-        
+        #'root://eoscms.cern.ch//eos/cms/store/data/Run2016C/DoubleMuon/MINIAOD/23Sep2016-v1/80000/0044DA75-708B-E611-8F8B-008CFA1974A4.root' #for data
+        'root://cms-xrd-global.cern.ch//store/data/Run2016B/MET/MINIAOD/03Feb2017_ver2-v2/100000/02650720-05ED-E611-9548-0CC47A78A360.root'       
         )
                             )
 
@@ -48,7 +52,7 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               #Is Data boolean
                               is_data = cms.bool(True),
                               #Activate debug option
-                              debug = cms.bool(True),
+                              debug = cms.bool(False),
                               #Trigger variables
                               FlagTrigger = cms.bool(True),#If use both then the rule to be evaluated is (TriggerPathAND and TriggerPathOR)
                               TriggerPathAND = cms.vstring("HLT_PFMET110_PFMHT110_IDTight"),#leve empty to not use a trigger
@@ -89,8 +93,8 @@ process.demo = cms.EDAnalyzer('Dracarys',
                               MinNbJets = cms.int32(0), #Minimal number of Bjets following our definition
                               MaxNbJets = cms.int32(0), #Maximum number of Bjets following our defintion
                               #MTMuonMET
-                              FlagMTMuonMET =  cms.bool(True),#
-                              MinMTMuonMet =  cms.double(50.0),
+                              FlagMTMuonMET =  cms.bool(True),#To keep signal region out of the scope
+                              MinMTMuonMet =  cms.double(50.0),#
                               MaxMTMuonMet =  cms.double(1000.0),
                               )
 
@@ -112,10 +116,11 @@ process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidate
 # met filters
 process.load("VLF_ANA.Dracarys.AdditionalFilters_cfi")
 
-process.p = cms.Path(process.goodVerticesFilterPAT * 
-                     process.EcalDeadCellTriggerPrimitiveFilterPAT *
-                     process.HBHENoiseFilterPAT * 
-                     process.HBHENoiseIsoFilterPAT * 
+
+process.p = cms.Path(process.goodVerticesFilterRECO * 
+                     process.EcalDeadCellTriggerPrimitiveFilterRECO *
+                     process.HBHENoiseFilterRECO * 
+                     process.HBHENoiseIsoFilterRECO * 
 		     process.BadPFMuonFilter *
 		     process.BadChargedCandidateFilter *
                      process.demo)
